@@ -29,8 +29,6 @@ fn partition<T: Ord>(arr: &mut [T], left: isize, right: isize) -> isize {
 
 #[cfg(test)]
 mod tests {
-    use std::vec;
-
     use super::*;
 
     #[test]

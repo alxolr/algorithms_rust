@@ -1,0 +1,18 @@
+[package]
+edition = "2021"
+name = "benchmarks"
+version = "0.1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+heapsort = {path = "../heapsort"}
+quicksort = {path = "../quicksort"}
+
+[dev-dependencies]
+criterion = "0.4"
+
+[[bench]]
+harness = false
+name = "my_benchmark"
