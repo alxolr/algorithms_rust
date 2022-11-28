@@ -1,13 +1,13 @@
-pub struct Heap {
-    pub data: Vec<i32>,
+pub struct Heap<T: Ord + Copy> {
+    pub data: Vec<T>,
 }
 
-impl Heap {
+impl<T: Ord + Copy> Heap<T> {
     pub fn new() -> Self {
         Heap { data: vec![] }
     }
 
-    pub fn insert(&mut self, element: i32) {
+    pub fn insert(&mut self, element: T) {
         self.data.push(element);
         let mut last_element_idx = self.data.len() - 1;
 
@@ -22,7 +22,7 @@ impl Heap {
         }
     }
 
-    pub fn pop(&mut self) -> Option<i32> {
+    pub fn pop(&mut self) -> Option<T> {
         match self.data.len() {
             n if n == 0 => None,
             n if n == 1 => self.data.pop(),
@@ -38,7 +38,7 @@ impl Heap {
         }
     }
 
-    pub fn into_sorted_vec(&mut self) -> Vec<i32> {
+    pub fn into_sorted_vec(&mut self) -> Vec<T> {
         let mut vec = vec![];
 
         while self.data.len() > 0 {
@@ -99,8 +99,8 @@ impl Heap {
     }
 }
 
-impl From<Vec<i32>> for Heap {
-    fn from(data: Vec<i32>) -> Self {
+impl<T: Ord + Copy> From<Vec<T>> for Heap<T> {
+    fn from(data: Vec<T>) -> Self {
         let mut heap = Heap { data };
 
         for idx in (0..=heap.data.len() - 1).rev() {
