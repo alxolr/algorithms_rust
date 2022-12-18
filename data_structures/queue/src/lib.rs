@@ -1,14 +1,12 @@
-pub struct Queue<T> {
-    pub size: usize,
-    pub head: usize,
-    pub tail: usize,
-    pub data: Vec<T>,
+pub struct Queue<T: Clone> {
+    head: usize,
+    tail: usize,
+    data: Vec<T>,
 }
 
-impl<T> Queue<T> {
+impl<T: Clone> Queue<T> {
     pub fn new(size: usize) -> Self {
         Queue {
-            size,
             head: 0,
             tail: 0,
             data: Vec::with_capacity(size),
@@ -16,30 +14,44 @@ impl<T> Queue<T> {
     }
 
     pub fn push(&mut self, element: T) {
-        if self.tail == self.data.len() && self.tail < self.size {
-            self.data.push(element);
-        } else {
-            self.data[self.tail] = element;
-        }
+        self.push_element(element);
 
-        // check if we have space in our data queue
-        if self.tail + 1 < self.size {
+        if self.tail + 1 < self.data.capacity() {
             self.tail += 1;
         } else {
             self.tail = 0;
         }
     }
 
-    pub fn pop(&mut self) -> Option<&T> {
+    pub fn pop(&mut self) -> Option<T> {
         let value = self.data.get(self.head);
 
-        if self.head + 1 < self.size {
+        if self.head + 1 < self.data.capacity() {
             self.head += 1;
         } else {
             self.head = 0;
         }
 
-        value
+        self.wrap_clone(value)
+    }
+
+    fn push_element(&mut self, element: T) {
+        if self.is_full() {
+            self.data.push(element); // grow the vec by pushing an element
+        } else {
+            self.data[self.tail] = element;
+        }
+    }
+
+    fn is_full(&self) -> bool {
+        self.tail == self.data.len() && self.tail < self.data.capacity()
+    }
+
+    fn wrap_clone(&self, element: Option<&T>) -> Option<T> {
+        match element {
+            Some(el) => Some(el.clone()),
+            None => None,
+        }
     }
 }
 
@@ -78,8 +90,8 @@ mod tests {
         queue.push(10);
         queue.push(20);
 
-        assert_eq!(queue.pop(), Some(&10));
-        assert_eq!(queue.pop(), Some(&20));
+        assert_eq!(queue.pop(), Some(10));
+        assert_eq!(queue.pop(), Some(20));
     }
 
     #[test]
@@ -89,6 +101,6 @@ mod tests {
         queue.push(10);
         queue.push(20);
 
-        assert_eq!(queue.pop(), Some(&20));
+        assert_eq!(queue.pop(), Some(20));
     }
 }

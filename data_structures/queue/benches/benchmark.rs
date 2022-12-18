@@ -27,7 +27,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| {
             arr.clone()
                 .into_iter()
-                .for_each(|element| queue.push_front(element));
+                .for_each(|element| queue.push_back(element));
 
             for _ in 0..arr.len() {
                 queue.pop_front();
