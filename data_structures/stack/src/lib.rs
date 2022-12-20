@@ -1,13 +1,11 @@
-pub struct Stack<T> {
-    size: usize,
+pub struct Stack<T: Clone> {
     tail: usize,
     data: Vec<T>,
 }
 
-impl<T> Stack<T> {
+impl<T: Clone> Stack<T> {
     pub fn new(size: usize) -> Self {
         Stack {
-            size,
             tail: 0,
             data: Vec::with_capacity(size),
         }
@@ -16,14 +14,14 @@ impl<T> Stack<T> {
     pub fn push(&mut self, element: T) {
         self.push_element(element);
 
-        if self.tail + 1 < self.size {
+        if self.tail + 1 < self.data.capacity() {
             self.tail += 1;
         } else {
             self.tail = 0;
         }
     }
 
-    pub fn pop(&mut self) -> Option<&T> {
+    pub fn pop(&mut self) -> Option<T> {
         let prev = match self.tail {
             0 => 0,
             _ => {
@@ -32,8 +30,10 @@ impl<T> Stack<T> {
             }
         };
 
-        let value = self.data.get(prev as usize);
-        value
+        match self.data.get(prev as usize) {
+            Some(value) => Some(value.clone()),
+            None => None,
+        }
     }
 
     fn push_element(&mut self, element: T) {
@@ -45,7 +45,7 @@ impl<T> Stack<T> {
     }
 
     fn is_full(&self) -> bool {
-        self.tail == self.data.len() && self.tail < self.size
+        self.tail == self.data.len() && self.tail < self.data.capacity()
     }
 }
 
@@ -68,11 +68,10 @@ mod tests {
     fn test_stack_poping_one_element() {
         let mut stack = Stack {
             data: vec![1],
-            size: 1,
             tail: 1,
         };
 
-        assert_eq!(stack.pop(), Some(&1));
+        assert_eq!(stack.pop(), Some(1));
         assert_eq!(stack.tail, 0);
     }
 }
