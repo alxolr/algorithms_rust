@@ -1,9 +1,9 @@
-pub struct Stack<T: Clone> {
+pub struct Stack<T> {
     tail: usize,
-    data: Vec<T>,
+    data: Vec<Option<T>>,
 }
 
-impl<T: Clone> Stack<T> {
+impl<T> Stack<T> {
     pub fn new(size: usize) -> Self {
         Stack {
             tail: 0,
@@ -30,17 +30,14 @@ impl<T: Clone> Stack<T> {
             }
         };
 
-        match self.data.get(prev as usize) {
-            Some(value) => Some(value.clone()),
-            None => None,
-        }
+        self.data[prev].take()
     }
 
     fn push_element(&mut self, element: T) {
         if self.is_full() {
-            self.data.push(element); // grow the vec by pushing an element
+            self.data.push(Some(element)); // grow the vec by pushing an Some(element
         } else {
-            self.data[self.tail] = element;
+            self.data[self.tail] = Some(element);
         }
     }
 
@@ -61,13 +58,13 @@ mod tests {
         stack.push(20);
         stack.push(30);
 
-        assert_eq!(stack.data, vec![10, 20, 30]);
+        assert_eq!(stack.data, vec![Some(10), Some(20), Some(30)]);
     }
 
     #[test]
     fn test_stack_poping_one_element() {
         let mut stack = Stack {
-            data: vec![1],
+            data: vec![Some(1)],
             tail: 1,
         };
 

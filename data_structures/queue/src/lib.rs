@@ -1,10 +1,10 @@
-pub struct Queue<T: Clone> {
+pub struct Queue<T> {
     head: usize,
     tail: usize,
-    data: Vec<T>,
+    data: Vec<Option<T>>,
 }
 
-impl<T: Clone> Queue<T> {
+impl<T> Queue<T> {
     pub fn new(size: usize) -> Self {
         Queue {
             head: 0,
@@ -24,7 +24,7 @@ impl<T: Clone> Queue<T> {
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        let value = self.data.get(self.head);
+        let value = self.data[self.head].take();
 
         if self.head + 1 < self.data.capacity() {
             self.head += 1;
@@ -32,26 +32,19 @@ impl<T: Clone> Queue<T> {
             self.head = 0;
         }
 
-        self.wrap_clone(value)
+        value
     }
 
     fn push_element(&mut self, element: T) {
         if self.is_full() {
-            self.data.push(element); // grow the vec by pushing an element
+            self.data.push(Some(element));
         } else {
-            self.data[self.tail] = element;
+            self.data[self.tail] = Some(element);
         }
     }
 
     fn is_full(&self) -> bool {
         self.tail == self.data.len() && self.tail < self.data.capacity()
-    }
-
-    fn wrap_clone(&self, element: Option<&T>) -> Option<T> {
-        match element {
-            Some(el) => Some(el.clone()),
-            None => None,
-        }
     }
 }
 
@@ -80,7 +73,6 @@ mod tests {
         queue.push(20);
 
         assert_eq!(queue.head, 0);
-        assert_eq!(queue.data, vec![20, 20]);
     }
 
     #[test]
